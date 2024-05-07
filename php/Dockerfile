@@ -14,6 +14,8 @@ RUN apt-get update && apt-get install -y \
     && docker-php-ext-enable xdebug
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
+ADD php.ini /usr/local/etc/php/conf.d/40-custom.ini
+
 RUN composer global require laravel/installer
 RUN composer global require laravel/ui
 
