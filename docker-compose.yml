@@ -1,0 +1,46 @@
+version: '3'
+
+services:
+  nginx:
+    container_name: nginx_container
+    image: nginx:latest
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./nginx/html:/var/www/html
+      - ./nginx/logs:/var/log/nginx:delegated
+    depends_on:
+      - php
+    networks:
+      - backend
+
+  php:
+    build:
+      context: ./php
+      dockerfile: Dockerfile
+    environment:
+      XDEBUG_CONFIG: ""
+    volumes:
+      - ./nginx/html:/var/www/html
+    expose:
+      - 9000
+    networks:
+      - backend
+    container_name: php_container
+
+  postgresql:
+    image: postgres:latest
+    ports:
+      - "5434:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres_db
+    volumes:
+      - ./postgresql/data:/var/lib/postgresql/data
+    networks:
+      - backend
+    container_name: pgsql_container
+networks:
+  backend:
